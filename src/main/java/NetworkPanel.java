@@ -15,7 +15,6 @@ public class NetworkPanel extends JPanel {
             requestObjectsCountButton = new JButton("Запросить количество объектов"),
             showLocalListButton = new JButton("Показать локальный список"),
             sendObjectByIndexButton = new JButton("Отправить объект по индексу");
-
     private final JTextArea
             logArea = new JTextArea();
 
@@ -25,8 +24,30 @@ public class NetworkPanel extends JPanel {
     private final JScrollPane
             scrollPane = new JScrollPane(logArea);
 
-    public NetworkPanel(
-    ) {
+    public NetworkPanel() {
+
+        ImageIcon close = new ImageIcon("src/main/resources/assets/close.png");
+        ImageIcon clear = new ImageIcon("src/main/resources/assets/clear.png");
+        ImageIcon request = new ImageIcon("src/main/resources/assets/search.png");
+        ImageIcon list = new ImageIcon("src/main/resources/assets/list.png");
+        ImageIcon send = new ImageIcon("src/main/resources/assets/send.png");
+
+        endConnButton.setIcon(close);
+        clearObjectsButton.setIcon(clear);
+        requestObjectByIndexButton.setIcon(request);
+        requestObjectsListButton.setIcon(request);
+        requestObjectsCountButton.setIcon(request);
+        showLocalListButton.setIcon(list);
+        sendObjectByIndexButton.setIcon(send);
+
+        endConnButton.setBackground(Color.LIGHT_GRAY);
+        clearObjectsButton.setBackground(Color.LIGHT_GRAY);
+        requestObjectByIndexButton.setBackground(Color.LIGHT_GRAY);
+        requestObjectsListButton.setBackground(Color.LIGHT_GRAY);
+        requestObjectsCountButton.setBackground(Color.LIGHT_GRAY);
+        showLocalListButton.setBackground(Color.LIGHT_GRAY);
+        sendObjectByIndexButton.setBackground(Color.LIGHT_GRAY);
+
         inputField.setEnabled(false);
 
         setLayout(new GridBagLayout());

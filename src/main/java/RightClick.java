@@ -1,52 +1,47 @@
-import java.awt.*;
-import java.awt.geom.AffineTransform;
+import org.json.JSONObject;
+
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import org.json.JSONObject;
-import org.json.JSONArray;
+import java.net.URL;
+import javax.imageio.ImageIO;
+import javax.swing.*;
 
-public class Smiley extends GraphicalObject {
-    private double angle = 0.0d;
+public class RightClick extends GraphicalObject {
+    private Image image;
 
-    public Smiley(int x, int y, int width, int height, Color color) {
+    private int vx = 3;
+    private int vy = 3;
+
+    private String imageUrl;
+
+    public RightClick(int x, int y, int width, int height, Color color, String imageUrl) throws IOException {
         super(x, y, width, height, color);
+        URL url = new URL(imageUrl);
+        this.imageUrl = imageUrl;
+        //image = ImageIO.read(url);
+        image = new ImageIcon("src/main/resources/assets/RightClick.png").getImage();
     }
 
     public void draw(Graphics g, int canvasWidth, int canvasHeight) {
         super.draw(g, canvasWidth, canvasHeight);
 
-        Graphics2D g2d = (Graphics2D) g;
-
-        AffineTransform originalTransform = g2d.getTransform(); // store the original transform
-        AffineTransform rotatedTransform = AffineTransform.getRotateInstance(angle, x, y);
-        g2d.transform(rotatedTransform); // apply the rotation
-
-        g.setColor(Color.YELLOW);
-        g.fillOval(x - width / 2, y - height / 2,width, height);
-
-        // draw the eyes
-        g.setColor(Color.BLACK);
-        g.fillOval(x - width / 3, y - height / 3, width / 6, height / 6);
-        g.fillOval(x + width / 6, y - height / 3, width / 6, height / 6);
-
-        // draw the mouth
-        g.drawArc(x - width / 4, y - height / 4, width / 2, height / 2, 190, 160);
-
-        g2d.setTransform(originalTransform); // restore the original transform
+        g.drawImage(image, x - width/2, y - height/2, width, height, null);
     }
 
     @Override
     public boolean contains(int x, int y) {
-        return (x >= this.x - width / 2 && x <= this.x + width / 2 && y >= this.y - height / 2 && y <= this.y + height / 2);
+        return (x >= this.x - width/2 && x <= this.x + width/2 && y >= this.y - height/2 && y <= this.y + height/2);
     }
 
     @Override
     public void read(InputStream input) throws IOException {
         DataInputStream dis = new DataInputStream(input);
-        angle = dis.readDouble();
         x = dis.readInt();
         y = dis.readInt();
         width = dis.readInt();
@@ -55,13 +50,14 @@ public class Smiley extends GraphicalObject {
         int g = dis.readInt();
         int b = dis.readInt();
         color = new Color(r, g, b);
-
+        String imageUrl = dis.readUTF();
+        URL url = new URL(imageUrl);
+        image = new ImageIcon("src/main/resources/assets/RightClick.png").getImage();
     }
 
     @Override
     public void write(OutputStream output) throws IOException {
         DataOutputStream dos = new DataOutputStream(output);
-        dos.writeDouble(angle);
         dos.writeInt(x);
         dos.writeInt(y);
         dos.writeInt(width);
@@ -69,23 +65,34 @@ public class Smiley extends GraphicalObject {
         dos.writeInt(color.getRed());
         dos.writeInt(color.getGreen());
         dos.writeInt(color.getBlue());
+        dos.writeUTF(image.toString());
     }
 
     @Override
     public void move(int canvasWidth, int canvasHeight) {
-        angle += 0.1;
+
+        if (x + width / 2 >= canvasWidth || x - width / 2 <= 0) {
+            vx *= -1;
+        }
+
+        if (y + height / 2 >= canvasHeight || y - height / 2 <= 0) {
+            vy *= -1;
+        }
+
+        x += vx;
+        y += vy;
     }
 
     @Override
     public String writeToJson() {
         var jsonObject = new JSONObject();
 
-        jsonObject.put("angle", angle);
         jsonObject.put("x", x);
         jsonObject.put("y", y);
         jsonObject.put("width", width);
         jsonObject.put("height", height);
         jsonObject.put("color", color.getRGB());
+        jsonObject.put("image", imageUrl);
 
         return jsonObject.toString();
     }
@@ -94,20 +101,31 @@ public class Smiley extends GraphicalObject {
     public void readFromJson(String json) {
         var jsonObject = new JSONObject(json);
 
-        angle = jsonObject.getDouble("angle");
         x = jsonObject.getInt("x");
         y = jsonObject.getInt("y");
         width = jsonObject.getInt("width");
         height = jsonObject.getInt("height");
         color = new Color(jsonObject.getInt("color"));
+
+        String imageUrl = jsonObject.getString("image");
+        URL url = null;
+        try {
+            url = new URL(imageUrl);
+            image = new ImageIcon("src/main/resources/assets/RightClick.png").getImage();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        this.imageUrl = imageUrl;
+
     }
 
     @Override
     public String toString() {
-        return "Smiley("
-                + " x=" + x
-                + " y=" + y
-                + " color=" + "[" + color.getRed() + ", " + color.getGreen() + ", " + color.getBlue() + "]"
-                + ")";
+        return "RightClick(" +
+                ", x=" + x +
+                ", y=" + y +
+                ", imageUrl='" + imageUrl + '\'' +
+                ')';
     }
 }
+

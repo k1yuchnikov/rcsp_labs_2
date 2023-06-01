@@ -27,7 +27,7 @@
     </properties>
 
     <dependencies>
-        <!-- https://mvnrepository.com/artifact/org.json/json -->
+        <!-- http://mvnrepository.com/artifact/org.json/json -->
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>

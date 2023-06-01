@@ -36,17 +36,17 @@ public class GraphicsEditor extends JPanel implements NetworkEventListener, Runn
             case NetworkEvent.ResponseObject responseObject -> {
                 networkPanel.writeln("Получен объект: " + responseObject.object());
                 var object = switch (responseObject.type()) {
-                    case "ImageObject" -> {
+                    case "RightClick" -> {
                         try {
-                            yield new ImageObject(
-                                    100, 100, 100, 100, Color.RED, "http://placekitten.com/200/300"
+                            yield new RightClick(
+                                    100, 100, 100, 100, Color.RED, "http://github.com/k1yuchnikov/rcsp-labs/blob/master/src/main/resources/assets/RightClick.png"
                             );
                         } catch (IOException e) {
                             e.printStackTrace();
                             yield null;
                         }
                     }
-                    case "Smiley" -> new Smiley(100, 100, 100, 100, Color.RED);
+                    case "LeftClick" -> new LeftClick(100, 100, 100, 100, Color.RED);
                     default -> throw new IllegalStateException("Unexpected value: " + responseObject.object());
                 };
                 object.readFromJson(responseObject.object());
@@ -55,17 +55,17 @@ public class GraphicsEditor extends JPanel implements NetworkEventListener, Runn
             case NetworkEvent.ResponseObjectByIndex responseObjectByIndex -> {
                 networkPanel.writeln("Получен объект по индексу: " + responseObjectByIndex.index());
                 var processedObj = switch (responseObjectByIndex.type()) {
-                    case "ImageObject" -> {
+                    case "RightClick" -> {
                         try {
-                            yield new ImageObject(
-                                    100, 100, 100, 100, Color.RED, "http://placekitten.com/200/300"
+                            yield new RightClick(
+                                    100, 100, 100, 100, Color.RED, "http://github.com/k1yuchnikov/rcsp-labs/blob/master/src/main/resources/assets/RightClick.png"
                             );
                         } catch (IOException e) {
                             e.printStackTrace();
                             yield null;
                         }
                     }
-                    case "Smiley" -> new Smiley(100, 100, 100, 100, Color.RED);
+                    case "LeftClick" -> new LeftClick(100, 100, 100, 100, Color.RED);
                     default -> throw new IllegalStateException("Unexpected value: " + responseObjectByIndex.object());
                 };
                 processedObj.readFromJson(responseObjectByIndex.object());
@@ -132,7 +132,7 @@ public class GraphicsEditor extends JPanel implements NetworkEventListener, Runn
             case STOP_RESUME -> "Стоп/возобновить";
         };
 
-        frame.setTitle("Графический редактор (" +
+        frame.setTitle("Лабораторная работа №2 (" +
                 (isServer ? "Сервер" : "Клиент")
                 + "): " + mode);
     }
@@ -252,9 +252,10 @@ public class GraphicsEditor extends JPanel implements NetworkEventListener, Runn
 
                 try {
                     if (e.getButton() == MouseEvent.BUTTON1) { // если нажата левая кнопка мыши
-                        object = new Smiley(x, y, 50, 50, Color.YELLOW); // создание объекта "Смайлик"
+                        object = new LeftClick(x, y, 50, 50, Color.YELLOW); // создание объекта "Смайлик"
                     } else if (e.getButton() == MouseEvent.BUTTON3) { // если нажата правая кнопка мыши - создание объекта "Картинка"
-                        object = new ImageObject(x, y, 90, 90, Color.WHITE, "https://n1s1.hsmedia.ru/4c/e5/79/4ce5794ae26ebe7b0375a079d4cbedea/332x331_1_bb4868657ac3cfb32439eab2474eed0e@712x709_0xac120003_4638627451615832336.jpg");
+                        object = new RightClick(x, y, 90, 90, Color.WHITE, "https://github.com/k1yuchnikov/rcsp-labs" +
+                                "/blob/master/src/main/resources/assets/RightClick.png");
                     }
                 } catch (IOException ex) {
                     ex.printStackTrace();

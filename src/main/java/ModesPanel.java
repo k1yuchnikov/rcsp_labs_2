@@ -18,6 +18,23 @@ public class ModesPanel extends JPanel {
         add(stopButton);
         add(stopAllButton);
         add(resumeAllButton);
+
+        ImageIcon plus = new ImageIcon("src/main/resources/assets/plus.png");
+        ImageIcon minus = new ImageIcon("src/main/resources/assets/minus.png");
+        ImageIcon stop = new ImageIcon("src/main/resources/assets/stop.png");
+        ImageIcon resume = new ImageIcon("src/main/resources/assets/resume.png");
+
+        addButton.setIcon(plus);
+        removeButton.setIcon(minus);
+        stopButton.setIcon(stop);
+        stopAllButton.setIcon(stop);
+        resumeAllButton.setIcon(resume);
+
+        addButton.setBackground(Color.LIGHT_GRAY);
+        removeButton.setBackground(Color.LIGHT_GRAY);
+        stopButton.setBackground(Color.LIGHT_GRAY);
+        stopAllButton.setBackground(Color.LIGHT_GRAY);
+        resumeAllButton.setBackground(Color.LIGHT_GRAY);
     }
 
     public void onAddButtonClicked(ActionListener listener) {

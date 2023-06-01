@@ -165,10 +165,10 @@ public class NetworkTCPProtocol implements Runnable {
                             var obj = jsonArray.getJSONObject(i);
 //                            objects[i] = new ObjectInfo(obj.getString("obj_type"), obj.getString("object"));
                             var object = switch (obj.getString("obj_type")) {
-                                case "ImageObject" -> new ImageObject(
-                                        100, 100, 100, 100, Color.RED, "http://placekitten.com/200/300"
+                                case "RightClick" -> new RightClick(
+                                        100, 100, 100, 100, Color.RED, "http://github.com/k1yuchnikov/rcsp-labs/blob/master/src/main/resources/assets/RightClick.png"
                                 );
-                                case "Smiley" -> new Smiley(100, 100, 100, 100, Color.RED);
+                                case "LeftClick" -> new LeftClick(100, 100, 100, 100, Color.RED);
                                 default -> throw new IllegalStateException("Unexpected value: " + obj.getString("obj_type"));
                             };
                             object.readFromJson(obj.getString("object"));

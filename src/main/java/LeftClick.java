@@ -1,46 +1,44 @@
-import org.json.JSONObject;
-
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Image;
+import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import javax.imageio.ImageIO;
+import org.json.JSONObject;
 
-public class ImageObject extends GraphicalObject {
-    private Image image;
+public class LeftClick extends GraphicalObject {
+    private double angle = 0.0d;
+    String text = "Строка текста";
 
-    private int vx = 3;
-    private int vy = 3;
-
-    private String imageUrl;
-
-    public ImageObject(int x, int y, int width, int height, Color color, String imageUrl) throws IOException {
+    public LeftClick(int x, int y, int width, int height, Color color) {
         super(x, y, width, height, color);
-        URL url = new URL(imageUrl);
-        this.imageUrl = imageUrl;
-        image = ImageIO.read(url);
     }
 
     public void draw(Graphics g, int canvasWidth, int canvasHeight) {
         super.draw(g, canvasWidth, canvasHeight);
 
-        g.drawImage(image, x - width/2, y - height/2, width, height, null);
+        Graphics2D g2d = (Graphics2D) g;
+
+        AffineTransform originalTransform = g2d.getTransform(); // store the original transform
+        AffineTransform rotatedTransform = AffineTransform.getRotateInstance(angle, x, y);
+        g2d.transform(rotatedTransform); // apply the rotation
+
+        g.setColor(Color.BLACK);
+        g.drawString(text, x - width / 2, y);
+
+        g2d.setTransform(originalTransform); // restore the original transform
     }
 
     @Override
     public boolean contains(int x, int y) {
-        return (x >= this.x - width/2 && x <= this.x + width/2 && y >= this.y - height/2 && y <= this.y + height/2);
+        return (x >= this.x - width / 2 && x <= this.x + width / 2 && y >= this.y - height / 2 && y <= this.y + height / 2);
     }
 
     @Override
     public void read(InputStream input) throws IOException {
         DataInputStream dis = new DataInputStream(input);
+        angle = dis.readDouble();
         x = dis.readInt();
         y = dis.readInt();
         width = dis.readInt();
@@ -49,14 +47,13 @@ public class ImageObject extends GraphicalObject {
         int g = dis.readInt();
         int b = dis.readInt();
         color = new Color(r, g, b);
-        String imageUrl = dis.readUTF();
-        URL url = new URL(imageUrl);
-        image = ImageIO.read(url);
+
     }
 
     @Override
     public void write(OutputStream output) throws IOException {
         DataOutputStream dos = new DataOutputStream(output);
+        dos.writeDouble(angle);
         dos.writeInt(x);
         dos.writeInt(y);
         dos.writeInt(width);
@@ -64,34 +61,23 @@ public class ImageObject extends GraphicalObject {
         dos.writeInt(color.getRed());
         dos.writeInt(color.getGreen());
         dos.writeInt(color.getBlue());
-        dos.writeUTF(image.toString());
     }
 
     @Override
     public void move(int canvasWidth, int canvasHeight) {
-
-        if (x + width / 2 >= canvasWidth || x - width / 2 <= 0) {
-            vx *= -1;
-        }
-
-        if (y + height / 2 >= canvasHeight || y - height / 2 <= 0) {
-            vy *= -1;
-        }
-
-        x += vx;
-        y += vy;
+        angle += 0.1;
     }
 
     @Override
     public String writeToJson() {
         var jsonObject = new JSONObject();
 
+        jsonObject.put("angle", angle);
         jsonObject.put("x", x);
         jsonObject.put("y", y);
         jsonObject.put("width", width);
         jsonObject.put("height", height);
         jsonObject.put("color", color.getRGB());
-        jsonObject.put("image", imageUrl);
 
         return jsonObject.toString();
     }
@@ -100,31 +86,20 @@ public class ImageObject extends GraphicalObject {
     public void readFromJson(String json) {
         var jsonObject = new JSONObject(json);
 
+        angle = jsonObject.getDouble("angle");
         x = jsonObject.getInt("x");
         y = jsonObject.getInt("y");
         width = jsonObject.getInt("width");
         height = jsonObject.getInt("height");
         color = new Color(jsonObject.getInt("color"));
-
-        String imageUrl = jsonObject.getString("image");
-        URL url = null;
-        try {
-            url = new URL(imageUrl);
-            image = ImageIO.read(url);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        this.imageUrl = imageUrl;
-
     }
 
     @Override
     public String toString() {
-        return "ImageObject(" +
-                ", x=" + x +
-                ", y=" + y +
-                ", imageUrl='" + imageUrl + '\'' +
-                ')';
+        return "LeftClick("
+                + " x=" + x
+                + " y=" + y
+                + " color=" + "[" + color.getRed() + ", " + color.getGreen() + ", " + color.getBlue() + "]"
+                + ")";
     }
 }
-
