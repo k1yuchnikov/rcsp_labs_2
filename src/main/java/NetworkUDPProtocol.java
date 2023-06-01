@@ -1,66 +1,77 @@
-import java.awt.*;
-import java.io.*;
-import java.net.ServerSocket;
-import java.net.Socket;
-import org.json.JSONObject;
 import org.json.JSONArray;
+import org.json.JSONObject;
+import java.awt.*;
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.SocketException;
 
-public class NetworkTCPProtocol implements Runnable {
-    private int port = 8080;
-    private String host = "localhost";
 
-    private ServerSocket serverSocket;
-    private Socket clientSocket;
+public class NetworkUDPProtocol implements Runnable {
+    public static final int PORT_1 = 7001;
+    public static final int PORT_2 = 7002;
+    public static final String HOST = "localhost";
+
+
+    private final int remotePort;
+
+
+    private DatagramSocket socket;
+
+
+    byte[] receivingDataBuffer = new byte[1024];
+    byte[] sendingDataBuffer = new byte[1024];
+
 
     private final NetworkEventListener listener;
 
-    private PrintWriter out;
-    private BufferedReader in;
 
-    private final boolean isServer;
-
-    public NetworkTCPProtocol(boolean isServer, NetworkEventListener listener, int port, String hostname) {
-        this(isServer, listener);
-        this.port = port;
-        this.host = hostname;
-    }
-
-    public NetworkTCPProtocol(boolean isServer, NetworkEventListener listener) {
+    public NetworkUDPProtocol(boolean isServer, NetworkEventListener listener) {
         this.listener = listener;
-        this.isServer = isServer;
+        int localPort;
+        if (isServer) {
+            localPort = PORT_1;
+            remotePort = PORT_2;
+        } else {
+            localPort = PORT_2;
+            remotePort = PORT_1;
+        }
+        try {
+            socket = new DatagramSocket(localPort);
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void run() {
-        InputStream inputStream;
-        OutputStream outputStream;
+
+    private void sendData(String data) {
         try {
-            if (isServer) {
-                serverSocket = new ServerSocket(port);
-                System.out.println("waiting for client...");
-                clientSocket = serverSocket.accept();
-            } else {
-                clientSocket = new Socket(host, port);
-            }
-            inputStream = clientSocket.getInputStream();
-            outputStream = clientSocket.getOutputStream();
-            out = new PrintWriter(outputStream, true);
-            in = new BufferedReader(new InputStreamReader(inputStream));
-            handleEvents();
+            sendingDataBuffer = data.getBytes();
+            var packet = new DatagramPacket(sendingDataBuffer, sendingDataBuffer.length, InetAddress.getByName(HOST), remotePort);
+            socket.send(packet);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+
+    private final DatagramPacket inputPacket = new DatagramPacket(receivingDataBuffer, receivingDataBuffer.length);
+
+
+    @Override
+    public void run() {
+        handleEvents();
+    }
+
+
     public void closeConnection() {
-        try {
-            if (serverSocket != null) {
-                serverSocket.close();
-            }
-            if (clientSocket != null) {
-                clientSocket.close();
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        var jsonObject = new JSONObject();
+        jsonObject.put("command", NetworkCommands.CLOSE_CONNECTION);
+        var res = jsonObject.toString();
+        sendData(res);
+        if (socket != null) {
+            socket.close();
         }
     }
 
@@ -69,7 +80,7 @@ public class NetworkTCPProtocol implements Runnable {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("command", NetworkCommands.CLEAR_OBJECTS);
         var res = jsonObject.toString();
-        out.println(res);
+        sendData(res);
     }
 
 
@@ -81,7 +92,7 @@ public class NetworkTCPProtocol implements Runnable {
         jsonObject.put("obj_type", type);
         jsonObject.put("index", index);
         var res = jsonObject.toString();
-        out.println(res);
+        sendData(res);
     }
 
 
@@ -99,7 +110,7 @@ public class NetworkTCPProtocol implements Runnable {
         }
         jsonObject.put("objects", jsonArray);
         var res = jsonObject.toString();
-        out.println(res);
+        sendData(res);
     }
 
 
@@ -108,7 +119,7 @@ public class NetworkTCPProtocol implements Runnable {
         jsonObject.put("command", NetworkCommands.RESPONSE_OBJ_LIST_SIZE);
         jsonObject.put("obj_list_size", size);
         var res = jsonObject.toString();
-        out.println(res);
+        sendData(res);
     }
 
 
@@ -117,7 +128,7 @@ public class NetworkTCPProtocol implements Runnable {
         jsonObject.put("command", NetworkCommands.REQUEST_OBJ_BY_INDEX);
         jsonObject.put("index", index);
         var res = jsonObject.toString();
-        out.println(res);
+        sendData(res);
     }
 
 
@@ -125,7 +136,7 @@ public class NetworkTCPProtocol implements Runnable {
         var jsonObject = new JSONObject();
         jsonObject.put("command", NetworkCommands.REQUEST_OBJ_LIST);
         var res = jsonObject.toString();
-        out.println(res);
+        sendData(res);
     }
 
 
@@ -133,14 +144,16 @@ public class NetworkTCPProtocol implements Runnable {
         var jsonObject = new JSONObject();
         jsonObject.put("command", NetworkCommands.REQUEST_OBJ_LIST_SIZE);
         var res = jsonObject.toString();
-        out.println(res);
+        sendData(res);
     }
+
 
     public void handleEvents() {
         eventLoop:
         while (true) {
             try {
-                String line = in.readLine();
+                socket.receive(inputPacket);
+                var line = new String(inputPacket.getData(), 0, inputPacket.getLength());
                 var jsonObject = new JSONObject(line);
                 var command = jsonObject.getString("command");
                 switch (command) {
@@ -163,13 +176,13 @@ public class NetworkTCPProtocol implements Runnable {
                         var objects = new GraphicalObject[jsonArray.length()];
                         for (int i = 0; i < jsonArray.length(); i++) {
                             var obj = jsonArray.getJSONObject(i);
-//                            objects[i] = new ObjectInfo(obj.getString("obj_type"), obj.getString("object"));
                             var object = switch (obj.getString("obj_type")) {
                                 case "RightClick" -> new RightClick(
                                         100, 100, 100, 100, Color.RED, "http://github.com/k1yuchnikov/rcsp-labs/blob/master/src/main/resources/assets/RightClick.png"
                                 );
                                 case "LeftClick" -> new LeftClick(100, 100, 100, 100, Color.RED);
-                                default -> throw new IllegalStateException("Unexpected value: " + obj.getString("obj_type"));
+                                default ->
+                                        throw new IllegalStateException("Unexpected value: " + obj.getString("obj_type"));
                             };
                             object.readFromJson(obj.getString("object"));
                             objects[i] = object;
@@ -187,3 +200,5 @@ public class NetworkTCPProtocol implements Runnable {
         }
     }
 }
+
+

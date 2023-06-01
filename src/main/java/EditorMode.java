@@ -1,4 +1,3 @@
-// Режимы редактора
 public enum EditorMode {
     ADD,
     REMOVE,

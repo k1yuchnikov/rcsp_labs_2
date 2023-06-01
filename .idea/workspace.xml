@@ -4,17 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2af307d6-c53d-46fd-b4d0-0e40605de34a" name="Changes" comment="добавил вращаемость для строки текста, допилил работу сервера">
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
+    <list default="true" id="2af307d6-c53d-46fd-b4d0-0e40605de34a" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/EditorMode.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/EditorMode.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/GraphicalObj.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/GraphicalObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/GraphicalObject.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/GraphicsEditor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/GraphicsEditor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ImageObj.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ImageObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/RightClick.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ModesPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ModesPanel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/NetworkPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/NetworkPanel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/NetworkTCPProtocol.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/NetworkTCPProtocol.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Smiley.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/LeftClick.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/NetworkTCPProtocol.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/NetworkUDPProtocol.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,15 +46,15 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "C:/Users/user/IdeaProjects/rcsp_labs_2/src/main/resources/assets"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/user/IdeaProjects/rcsp_labs_2/src/main/resources/assets&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\user\IdeaProjects\rcsp_labs_2\src\main\resources\assets" />
@@ -103,7 +99,8 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1685641688029</updated>
-      <workItem from="1685641691463" duration="8916000" />
+      <workItem from="1685641691463" duration="11082000" />
+      <workItem from="1685655252868" duration="1896000" />
     </task>
     <task id="LOCAL-00001" summary="вторая лаба по РКСП, бета">
       <created>1685642662124</created>
@@ -112,7 +109,14 @@
       <option name="project" value="LOCAL" />
       <updated>1685642662124</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="добавил вращаемость для строки текста, допилил работу сервера">
+      <created>1685651570306</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1685651570306</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -120,6 +124,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="вторая лаба по РКСП, бета" />
-    <option name="LAST_COMMIT_MESSAGE" value="вторая лаба по РКСП, бета" />
+    <MESSAGE value="добавил вращаемость для строки текста, допилил работу сервера" />
+    <option name="LAST_COMMIT_MESSAGE" value="добавил вращаемость для строки текста, допилил работу сервера" />
   </component>
 </project>

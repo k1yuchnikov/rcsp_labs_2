@@ -6,23 +6,20 @@ import java.util.Vector;
 import java.util.concurrent.*;
 import javax.swing.*;
 
-// Класс для рисования графических объектов
 public class GraphicsEditor extends JPanel implements NetworkEventListener, Runnable {
-    private Vector<GraphicalObject> objects = new Vector<>(); // список графических объектов
-    private final ExecutorService executor = Executors.newSingleThreadExecutor(); // пул потоков
-    private final ScheduledExecutorService scheduledExecutor = Executors.newSingleThreadScheduledExecutor(); // пул потоков для таймера
+    private Vector<GraphicalObject> objects = new Vector<>();
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final ScheduledExecutorService scheduledExecutor = Executors.newSingleThreadScheduledExecutor();
 
-    private final boolean isServer; // режим сервера
+    private final boolean isServer;
 
-    private final NetworkTCPProtocol protocol;
+    private final NetworkUDPProtocol protocol;
 
-    private EditorMode mode = EditorMode.ADD; // текущий режим редактора
+    private EditorMode mode = EditorMode.ADD;
 
-    private MainPanel mainPanel; // панель для рисования
+    private MainPanel mainPanel;
 
-    private ModesPanel modesPanel; // панель с режимами редактора
-
-    private NetworkPanel networkPanel; // панель с сетевыми функциями
+    private NetworkPanel networkPanel;
 
 
     @Override
@@ -109,7 +106,7 @@ public class GraphicsEditor extends JPanel implements NetworkEventListener, Runn
         registerModesPanel();
         start();
         this.isServer = isServer;
-        protocol = new NetworkTCPProtocol(isServer, this);
+        protocol = new NetworkUDPProtocol(isServer, this);
         var thread = new Thread(protocol);
         thread.setDaemon(true);
         thread.start();
